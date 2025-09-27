@@ -1,0 +1,58 @@
+{% set start_date='1970-01-01' -%}
+{% set end_date='2100-12-31' -%}
+
+WITH days as (
+  SELECT day as calendar_date
+  FROM UNNEST(GENERATE_DATE_ARRAY(DATE '{{ start_date }}', DATE '{{ end_date }}', INTERVAL 1 DAY)) AS day
+),
+
+days_with_additional_info as (
+  SELECT
+    calendar_date
+    , EXTRACT(YEAR FROM calendar_date) as year
+    , EXTRACT(QUARTER FROM calendar_date) as quarter
+    , EXTRACT(MONTH FROM calendar_date) as month
+    , EXTRACT(ISOWEEK FROM calendar_date) as week -- ISO 8601 基準の週番号
+    , EXTRACT(DAYOFWEEK FROM calendar_date) as day_of_week -- (1=日曜, 2=月曜, ... 7=土曜)
+    , EXTRACT(DAY FROM calendar_date) as day
+  FROM days
+),
+
+standard_calendar as (
+  SELECT
+    CAST(CALENDAR_DATE AS STRING) || '-00' as calendar_code
+    , calendar_date
+    , year
+    , quarter
+    , month
+    , week
+    , day_of_week
+    , day
+    {# 全期間 #}
+    , DATE_DIFF(calendar_date, DATE('{{ start_date }}'), DAY) as diff_day_from_start_date
+    , DATE_DIFF(calendar_date, DATE('{{ start_date }}'), ISOWEEK) as diff_week_from_start_date
+    , DATE_DIFF(calendar_date, DATE('{{ start_date }}'), MONTH) as diff_month_from_start_date
+    , DATE_DIFF(calendar_date, DATE('{{ start_date }}'), QUARTER) as diff_quarter_from_start_date
+    , DATE_DIFF(calendar_date, DATE('{{ start_date }}'), YEAR) as diff_year_from_start_date
+    {# 年 #}
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, YEAR), DAY) as diff_day_from_year
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, YEAR), ISOWEEK) as diff_week_from_year
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, YEAR), MONTH) as diff_month_from_year
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, YEAR), QUARTER) as diff_quarter_from_year
+    {# 四半期 #}
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, QUARTER), DAY) as diff_day_from_quarter
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, QUARTER), ISOWEEK) as diff_week_from_quarter
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, QUARTER), MONTH) as diff_month_from_quarter
+    {# 月 #}
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, MONTH), DAY) as diff_day_from_month
+    , DATE_DIFF(calendar_date, DATE_TRUNC(CALENDAR_DATE, MONTH), ISOWEEK) as diff_week_from_month
+    {# 営業日 #}
+    , CASE
+      {# 月曜 ~ 金曜: 営業日 #}
+      WHEN day_of_week BETWEEN 2 AND 6 THEN true
+      ELSE false
+    END AS is_business_day
+  FROM days_with_additional_info
+)
+
+SELECT * FROM standard_calendar

@@ -1,0 +1,26 @@
+name: dbt_ec
+
+profile: dbt_ec
+
+seed-paths: ['seeds']
+model-paths: ['models']
+macro-paths: ['macros']
+clean-targets:
+  - 'target'
+  - 'dbt_packages'
+
+seeds:
+  dbt_ec:
+    +schema: seed
+
+models:
+  dbt_ec:
+    staging:
+      +schema: stg
+      +materialized: view
+    refined:
+      +schema: ref
+      +materialized: table
+    mart:
+      +schema: mart
+      +materialized: table

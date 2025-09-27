@@ -1,0 +1,11 @@
+dbt_ec:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      threads: 16
+      database: sampleproject-440314
+      schema: dev
+      method: service-account
+      keyfile: ../serviceaccount.json
+      location: asia-northeast1

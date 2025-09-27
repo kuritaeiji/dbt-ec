@@ -1,0 +1,7 @@
+{
+  "dbt.dbtIntegration": "fusion",
+  "files.associations": {
+    "*.sql": "jinja-sql",
+    "*.yml": "jinja-yaml"
+  }
+}

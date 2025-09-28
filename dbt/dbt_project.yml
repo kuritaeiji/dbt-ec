@@ -24,3 +24,7 @@ models:
     mart:
       +schema: mart
       +materialized: table
+
+vars:
+  dbt_ec:
+    default_record_source_record: system.default_record

@@ -1,6 +1,6 @@
 with actual as (
     select
-        *
+        * EXCEPT (load_ts_utc)
     from {{ ref('dim_calendar') }}
     where calendar_code = '2000-01-01-00'
 ),
@@ -28,7 +28,8 @@ expected as (
         0 as diff_month_from_quarter,
         0 as diff_day_from_month,
         0 as diff_week_from_month,
-        false as is_business_day
+        false as is_business_day,
+        'dbt' as record_source
 )
 (
     select * from expected

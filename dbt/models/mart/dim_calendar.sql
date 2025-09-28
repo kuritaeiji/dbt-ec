@@ -51,8 +51,45 @@ standard_calendar as (
       {# 月曜 ~ 金曜: 営業日 #}
       WHEN day_of_week BETWEEN 2 AND 6 THEN true
       ELSE false
-    END AS is_business_day
+    END as is_business_day
+    , 'dbt' as record_source
+    , '{{ run_started_at }}' as load_ts_utc
   FROM days_with_additional_info
+),
+
+default_record as (
+    SELECT
+      '-1' as calendar_code
+      , DATE '0001-01-01' calendar_date
+      , -1 as year
+      , -1 as quarter
+      , -1 as month
+      , -1 as week
+      , -1 as day_of_week
+      , -1 as day
+      , -1 as diff_day_from_start_date
+      , -1 as diff_week_from_start_date
+      , -1 as diff_month_from_start_date
+      , -1 as diff_quarter_from_start_date
+      , -1 as diff_year_from_start_date
+      , -1 as diff_day_from_year
+      , -1 as diff_week_from_year
+      , -1 as diff_month_from_year
+      , -1 as diff_quarter_from_year
+      , -1 as diff_day_from_quarter
+      , -1 as diff_week_from_quarter
+      , -1 as diff_month_from_quarter
+      , -1 as diff_day_from_month
+      , -1 as diff_week_from_month
+      , false as is_business_day
+    , '{{ var('default_record_source_record') }}' as record_source
+    , '{{ run_started_at }}' as load_ts_utc
+),
+
+with_default_record as (
+  SELECT * FROM standard_calendar
+  UNION ALL
+  SELECT * FROM default_record
 )
 
-SELECT * FROM standard_calendar
+SELECT * FROM with_default_record

@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "path": "dbt",
+      "name": "dbt"
+    },
+    {
+      "path": "dlt_project",
+      "name": "dlt_project"
+    },
+    {
+      "path": "mysql",
+      "name": "mysql"
+    },
+    {
+      "path": "terraform",
+      "name": "terraform"
+    }
+  ],
+  "settings": {
+    "dbt.dbtIntegration": "fusion",
+    "files.associations": {
+      "*.sql": "jinja-sql",
+      "*.yml": "jinja-yaml"
+    },
+    "dbtPowerUser.projectPaths": [
+      "${workspaceFolder}",
+      "${workspaceFolder}/dbt_packages"
+    ]
+  }
+}

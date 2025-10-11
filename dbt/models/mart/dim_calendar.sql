@@ -53,7 +53,7 @@ standard_calendar as (
       ELSE false
     END as is_business_day
     , 'dbt' as record_source
-    , '{{ run_started_at }}' as load_ts_utc
+    , TIMESTAMP '{{ run_started_at }}' as load_ts_utc
   FROM days_with_additional_info
 ),
 
@@ -83,7 +83,7 @@ default_record as (
       , -1 as diff_week_from_month
       , false as is_business_day
     , '{{ var('default_record_source_record') }}' as record_source
-    , '{{ run_started_at }}' as load_ts_utc
+    , TIMESTAMP '{{ run_started_at }}' as load_ts_utc
 ),
 
 with_default_record as (

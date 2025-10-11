@@ -1,0 +1,12 @@
+version: 2
+sources:
+  - name: source
+    schema: dev_source
+    tables:
+      - name: customer
+        columns:
+          - name: id
+            tests:
+              - not_null
+              - unique
+          - name: name

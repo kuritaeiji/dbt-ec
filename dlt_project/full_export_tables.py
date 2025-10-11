@@ -10,7 +10,7 @@ def full_export_tables():
         dataset_name='dev_source'
     )
 
-    load_info = pipeline.run(source, write_disposition='merge')
+    load_info = pipeline.run(source, write_disposition='replace')
     print(load_info)
 
 if __name__ == '__main__':
